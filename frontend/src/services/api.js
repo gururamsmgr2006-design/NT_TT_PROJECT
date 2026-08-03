@@ -1,5 +1,5 @@
 // src/services/api.js — UPDATED v2.0 (all CIOS services)
-export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+export const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 export const getToken   = ()  => localStorage.getItem('talenttrack_token');
 export const setToken   = (t) => localStorage.setItem('talenttrack_token', t);
 export const removeToken= ()  => localStorage.removeItem('talenttrack_token');
