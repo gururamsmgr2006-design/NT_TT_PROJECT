@@ -1,0 +1,8 @@
+# .gitignore — Add to backend/ root
+# ============================================================
+node_modules/
+.env
+uploads/resumes/*
+!uploads/resumes/.gitkeep
+*.log
+dist/

@@ -1,0 +1,72 @@
+# render.yaml — TalentTrack Backend Deployment Config
+# Place this file in the backend/ root directory.
+# Render reads this to configure your web service.
+
+services:
+  - type: web
+    name: talenttrack-backend
+    env: node
+    region: oregon           # Change to your preferred region
+    plan: free               # Upgrade to starter for persistent disk
+    buildCommand: npm install
+    startCommand: npm start
+
+    # ── Environment Variables ────────────────────────────────
+    # Set sync: false for ALL secrets so Render never overwrites them
+    # from this file. Fill in actual values via Render dashboard.
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      - key: PORT
+        value: 5000
+
+      # ── MongoDB Atlas ──────────────────────────────────────
+      - key: MONGO_URI
+        sync: false        # Set in Render dashboard: MongoDB connection string
+
+      # ── JWT ────────────────────────────────────────────────
+      - key: JWT_SECRET
+        sync: false        # Set in Render dashboard: crypto.randomBytes(64).toString('hex')
+      - key: JWT_EXPIRE
+        value: 7d
+
+      # ── CORS ───────────────────────────────────────────────
+      - key: FRONTEND_URL
+        value: https://YOUR-APP.netlify.app   # Update with your Netlify URL
+
+      # ── Cloudinary ─────────────────────────────────────────
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+
+      # ── Email (Password Reset) ─────────────────────────────
+      - key: EMAIL_FROM
+        sync: false
+      - key: EMAIL_HOST
+        value: smtp.gmail.com
+      - key: EMAIL_PORT
+        value: 587
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+
+      # ── Developer Feedback Notifications (optional) ────────
+      - key: DEVELOPER_EMAIL
+        sync: false
+
+      # ── Rate Limiting ──────────────────────────────────────
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX
+        value: 100
+      - key: LOGIN_RATE_LIMIT_MAX
+        value: 10
+
+      # ── File Uploads ───────────────────────────────────────
+      - key: MAX_FILE_SIZE
+        value: 5242880
