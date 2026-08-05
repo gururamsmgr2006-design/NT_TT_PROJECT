@@ -439,9 +439,7 @@ export default function Home() {
                 <button className="pub-btn-primary pub-btn-lg" onClick={() => navigate('/signup')}>
                   <i className="fas fa-rocket" /> Get Started Free
                 </button>
-                <button className="pub-btn-secondary pub-btn-lg" onClick={() => navigate('/career-intelligence')}>
-                  <i className="fas fa-brain" /> Explore Intelligence Suite
-                </button>
+               
               </>
             )}
           </div>

@@ -87,23 +87,15 @@ export default function RecruiterDashboard() {
           onClick={() => setMobileMenu(p => !p)}>
           <i className="fas fa-bars" />
         </button>
-        <div className="rdb-logo">TalentTrack Recruiter</div>
+        <div className="rdb-logo">TalentTrack </div>
         <ul className="rdb-nav-links" style={{ display:'flex', gap:'0.2rem' }}>
-          {NAV_ITEMS.slice(0,4).map(n => (
-            <li key={n.v}>
-              <a className={view===n.v?'active':''} onClick={() => navTo(n.v)} style={{ cursor:'pointer' }}>
-                <i className={`fas ${n.icon}`} style={{ marginRight:4 }} />{n.label}
-              </a>
-            </li>
-          ))}
+          
         </ul>
         <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', flexShrink:0 }}>
           <span style={{ fontSize:'0.85rem', fontWeight:600, color:'var(--muted)' }}>
             {user?.fullName?.split(' ')[0]}
           </span>
-          <button className="dark-toggle" onClick={() => setDark(p => !p)}>
-            {dark ? '☀️ Light' : '🌙 Dark'}
-          </button>
+         
           <button className="rdb-btn rdb-btn-danger rdb-btn-sm" onClick={handleLogout}>
             <i className="fas fa-sign-out-alt" /> Logout
           </button>

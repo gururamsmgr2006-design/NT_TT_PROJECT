@@ -154,9 +154,9 @@ export default function Help() {
             <div className="help-contact-card">
               <div className="help-contact-icon" style={{ background:'#10b98118', color:'#10b981' }}><i className="fas fa-key" /></div>
               <h3>Password & Account Issues</h3>
-              <p>Forgot your password? Use the <strong>Forgot Password</strong> link on the Login page for a reset link. If you face account issues, email us directly.</p>
+              <p>Forgot your password? For <strong>Forgot Password</strong> and any account issues, email us directly using your registered TalentTrack email id.</p>
               <a
-                href="mailto:gururamsmgr2006@gmail.com?subject=TalentTrack Account Issue&body=Hi, I am writing from my TalentTrack registered email. Issue: "
+                href="mailto:gururamsmgr2006@gmail.com?subject=TalentTrack Account Issue&body=Hi, I am writing from my TalentTrack registered email. Issue: Forget password or account issue "
                 className="pub-btn-primary"
                 style={{ display:'inline-block', textDecoration:'none', textAlign:'center' }}
               >

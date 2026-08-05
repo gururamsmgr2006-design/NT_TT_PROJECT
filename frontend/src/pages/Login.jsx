@@ -62,7 +62,7 @@ export default function Login() {
       <main className="auth-main">
         <div className="auth-card">
           <h2 style={{ textAlign: 'center', marginBottom: '1.5rem', color: '#1a1a2e', fontWeight: 700 }}>
-            Sign in to TalentTrack
+            Sign in 
           </h2>
 
           <form onSubmit={handleSubmit} noValidate>
@@ -87,10 +87,7 @@ export default function Login() {
               />
             </div>
 
-            {/* FIX: Real link to /forgot-password — no more fake toast */}
-            <div className="forgot-link">
-              <Link to="/forgot-password">Forgot password?</Link>
-            </div>
+           
 
             <button type="submit" className="auth-btn" disabled={!isValid || loading}>
               {loading

@@ -238,7 +238,9 @@ function JobsTab({ onApply }) {
                 <button className={`save-btn${saved.has(job._id)?' saved':''}`} onClick={() => toggleSave(job._id)}><i className={`fa${saved.has(job._id)?'s':'r'} fa-bookmark`} /></button>
               </div>
               <div className="job-meta"><span><i className="fas fa-map-marker-alt" /> {job.location}</span><span><i className="fas fa-briefcase" /> {job.jobType}</span>{job.salaryDisplay&&job.salaryDisplay!=='Not specified'&&<span><i className="fas fa-rupee-sign" /> {job.salaryDisplay}</span>}</div>
-              <p className="job-desc">{job.description?.slice(0,120)}…</p>
+              <p className="job-desc">
+              {job.description || "No description available."}
+            </p>
               <div className="job-actions">
                 <span className="job-date">{new Date(job.createdAt).toLocaleDateString('en-IN')}</span>
                 <button className="apply-btn" onClick={() => onApply(job)}>Apply Now</button>

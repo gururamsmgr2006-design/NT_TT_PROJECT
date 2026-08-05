@@ -85,9 +85,7 @@ export default function Navbar() {
           </Link>
         ))}
         <div className="pub-nav-mobile-actions">
-          <button className="pub-nav-theme-btn" onClick={toggle}>
-            <i className={`fas fa-${dark ? 'sun' : 'moon'}`} /> {dark ? 'Light Mode' : 'Dark Mode'}
-          </button>
+         
           {isLoggedIn ? (
             <button className="pub-nav-signup-btn" onClick={() => { logout(); navigate('/'); setOpen(false); }}>Logout</button>
           ) : (

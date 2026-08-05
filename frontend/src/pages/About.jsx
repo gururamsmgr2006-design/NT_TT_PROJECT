@@ -19,7 +19,6 @@ const TECH_STACK = [
   { layer:'AI Layer',   tech:'Gemini + Groq + OpenRouter',       icon:'fa-robot',       color:'#8b5cf6' },
   { layer:'Auth',       tech:'JWT + bcryptjs (salt 12)',          icon:'fa-shield-alt',  color:'#ef4444' },
   { layer:'File Parse', tech:'pdf-parse + mammoth',              icon:'fa-file-alt',    color:'#f59e0b' },
-  { layer:'Email',      tech:'Nodemailer + SMTP',                icon:'fa-envelope',    color:'#06b6d4' },
   { layer:'Security',   tech:'Helmet + express-rate-limit',      icon:'fa-lock',        color:'#10b981' },
 ];
 
