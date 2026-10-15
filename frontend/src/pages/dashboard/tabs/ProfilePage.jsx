@@ -132,14 +132,49 @@ export default function ProfilePage() {
             </div>
           ))}
         </div>
-        <div className="prf-add-row">
-          <input type="text" placeholder="Skill name" value={newSkill.name} onChange={e => setNewSkill(p=>({...p,name:e.target.value}))} onKeyDown={e => e.key==='Enter' && addSkill()} />
-          <select value={newSkill.level} onChange={e => setNewSkill(p=>({...p,level:e.target.value}))}>
-            {SKILL_LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
-          </select>
-          <input type="number" placeholder="Years" value={newSkill.yearsUsed} onChange={e => setNewSkill(p=>({...p,yearsUsed:parseInt(e.target.value)||0}))} style={{ width:70 }} />
-          <button className="prf-add-btn" onClick={addSkill}><i className="fas fa-plus" /> Add</button>
-        </div>
+       
+<div className="prf-add-row">
+  <div className="prf-field">
+    <label>Skill Name</label>
+    <input
+      type="text"
+      placeholder="Skill name"
+      value={newSkill.name}
+      onChange={e => setNewSkill(p => ({ ...p, name: e.target.value }))}
+      onKeyDown={e => e.key === 'Enter' && addSkill()}
+    />
+  </div>
+
+  <div className="prf-field">
+    <label>Skill Level</label>
+    <select
+      value={newSkill.level}
+      onChange={e => setNewSkill(p => ({ ...p, level: e.target.value }))}
+    >
+      {SKILL_LEVELS.map(l => (
+        <option key={l} value={l}>{l}</option>
+      ))}
+    </select>
+  </div>
+
+  <div className="prf-field">
+    <label>Years Used</label>
+    <input
+      type="number"
+      placeholder="Years"
+      min="0"
+      value={newSkill.yearsUsed}
+      onChange={e => setNewSkill(p => ({
+        ...p,
+        yearsUsed: parseInt(e.target.value) || 0
+      }))}
+    />
+  </div>
+
+  <button className="prf-add-btn" onClick={addSkill}>
+    <i className="fas fa-plus" /> Add
+  </button>
+</div>
       </Section>
 
       {/* Education */}

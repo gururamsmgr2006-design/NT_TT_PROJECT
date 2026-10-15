@@ -516,3 +516,26 @@ body.dark {
   .ci-grid { grid-template-columns:1fr; }
   .dash-content { padding:1rem; }
 }
+
+.prf-add-row {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.prf-add-row .prf-field {
+  min-width: 0;
+  margin-bottom: 0;
+    flex: 1;
+}
+
+.prf-add-row .prf-field input,
+.prf-add-row .prf-field select {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.prf-add-row .prf-field:last-of-type {
+  max-width: 110px;
+
+}
