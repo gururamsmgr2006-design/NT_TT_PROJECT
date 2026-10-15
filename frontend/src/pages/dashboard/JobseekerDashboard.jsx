@@ -16,7 +16,6 @@ import CareerDigitalTwin   from './tabs/CareerDigitalTwin.jsx';
 import EmployabilityScoreTab from './tabs/EmployabilityScoreTab.jsx';
 import CareerEscapeVelocity from './tabs/CareerEscapeVelocity.jsx';
 import SkillDemandRadar    from './tabs/SkillDemandRadar.jsx';
-import SmartJobMatches     from './tabs/SmartJobMatches.jsx';
 import Analytics           from './tabs/Analytics.jsx';
 import CareerInsights      from './tabs/CareerInsights.jsx';
 import MarketTrends        from './tabs/MarketTrends.jsx';
@@ -38,7 +37,6 @@ const NAV = [
       { view:'jobs',        icon:'fa-search',        label:'Opportunities'     },
       { view:'applied',     icon:'fa-paper-plane',   label:'Applications'    },
       { view:'saved',       icon:'fa-bookmark',      label:'Saved Jobs'      },
-      { view:'matches',     icon:'fa-magic',         label:'Smart Matches',  badge:'AI' },
     ],
   },
   {
@@ -123,9 +121,6 @@ function OverviewTab({ user, onNavigate }) {
         <div className="ov2-welcome-actions">
           <button className="ov2-action-btn primary" onClick={() => onNavigate('insights')}>
             <i className="fas fa-lightbulb" /> Get AI Insights
-          </button>
-          <button className="ov2-action-btn secondary" onClick={() => onNavigate('matches')}>
-            <i className="fas fa-magic" /> Smart Matches
           </button>
         </div>
       </div>
@@ -399,7 +394,6 @@ export default function JobseekerDashboard() {
       case 'jobs':         return <JobsTab onApply={setApplyJob} />;
       case 'applied':      return <AppliedTab />;
       case 'saved':        return <SavedTab />;
-      case 'matches':      return <SmartJobMatches />;
       case 'ai':           return <AIAssistant />;
       case 'resume':       return <ResumeIntelligence />;
       case 'employability':return <EmployabilityScoreTab />;
