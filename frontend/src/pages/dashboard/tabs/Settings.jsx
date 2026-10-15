@@ -2,7 +2,8 @@
 import { useState, useEffect } from 'react';
 import { ProfileService } from '../../../services/api.js';
 import { useAuth } from '../../../context/AuthContext.jsx';
-import { apiRequest, BACKEND_URL } from '../../../services/api.js';
+  import { apiRequest, BACKEND_URL, getToken } from '../../../services/api.js';
+  import { jsPDF } from 'jspdf';
 
 const SECTIONS = ['Account','Privacy','AI Settings','Theme & Language','Data','Danger Zone'];
 
@@ -82,6 +83,79 @@ export default function Settings() {
     finally { setDeleting(false); }
   };
 
+      // ── Export helpers: turn raw JSON into a readable report ──
+  const buildReport = (d) => {
+    const u = d.user || {}, p = d.profile || {};
+    const L = [];
+    const add = (t = '') => L.push(t);
+    const head = (t) => { add(); add(t.toUpperCase()); add('-'.repeat(t.length)); };
+    const fmt = (x) => (x ? new Date(x).toLocaleDateString() : '');
+
+    add('TALENTTRACK - MY DATA EXPORT');
+    add(`Exported on: ${new Date(d.exportedAt).toLocaleString()}`);
+
+    head('Account');
+    add(`Name: ${u.fullName || '-'}`);
+    add(`Email: ${u.email || '-'}`);
+    add(`Role: ${u.role || '-'}`);
+    if (u.phone) add(`Phone: ${u.phone}`);
+    if (u.location) add(`Location: ${u.location}`);
+    if (u.bio) add(`Bio: ${u.bio}`);
+    if (u.createdAt) add(`Member since: ${fmt(u.createdAt)}`);
+
+    head('Profile');
+    if (p.headline) add(`Headline: ${p.headline}`);
+    if (p.currentRole) add(`Current role: ${p.currentRole}${p.currentCompany ? ' at ' + p.currentCompany : ''}`);
+    add(`Years of experience: ${p.yearsExperience ?? 0}`);
+    if (p.summary) add(`Summary: ${p.summary}`);
+
+    if (p.skills?.length) { head('Skills'); p.skills.forEach(s => add(`- ${s.name} (${s.level}, ${s.yearsUsed || 0} yrs)`)); }
+    if (p.experience?.length) { head('Experience'); p.experience.forEach(e => { add(`- ${e.title} @ ${e.company} (${e.from || '?'} - ${e.current ? 'Present' : e.to || '?'})`); if (e.description) add(`  ${e.description}`); }); }
+    if (p.education?.length) { head('Education'); p.education.forEach(e => add(`- ${e.degree || ''} ${e.field ? 'in ' + e.field : ''}, ${e.institution || ''} ${e.year ? '(' + e.year + ')' : ''}`)); }
+    if (p.certifications?.length) { head('Certifications'); p.certifications.forEach(c => add(`- ${c.name}${c.issuer ? ' - ' + c.issuer : ''}${c.year ? ' (' + c.year + ')' : ''}`)); }
+    if (p.projects?.length) { head('Projects'); p.projects.forEach(pr => { add(`- ${pr.name}${pr.techStack?.length ? ' [' + pr.techStack.join(', ') + ']' : ''}`); if (pr.description) add(`  ${pr.description}`); }); }
+    if (p.interests?.length) { head('Interests'); add(p.interests.join(', ')); }
+    const g = p.careerGoals || {};
+    if (g.targetRole || g.preferredIndustry || g.expectedSalary) {
+      head('Career Goals');
+      if (g.targetRole) add(`Target role: ${g.targetRole}`);
+      if (g.preferredIndustry) add(`Industry: ${g.preferredIndustry}`);
+      if (g.expectedSalary) add(`Expected salary: ${g.expectedSalary}`);
+    }
+    return L;
+  };
+
+  const exportData = async (format) => {
+    try {
+      const r = await fetch(`${BACKEND_URL}/api/profile/export`, { headers: { Authorization: `Bearer ${getToken()}` } });
+      if (!r.ok) throw new Error('Export failed. Please try again.');
+      const lines = buildReport(await r.json());
+
+      if (format === 'txt') {
+        const url = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/plain' }));
+        const a = document.createElement('a');
+        a.href = url; a.download = 'talenttrack-my-data.txt'; a.click();
+        URL.revokeObjectURL(url);
+      } else {
+        const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+        const pageH = doc.internal.pageSize.getHeight();
+        let y = 50;
+        lines.forEach((ln, i) => {
+          const isTitle = i === 0;
+          const isHead = ln && ln === ln.toUpperCase() && /[A-Z]/.test(ln) && !ln.startsWith('-') && !ln.startsWith(' ');
+          doc.setFont('helvetica', isTitle || isHead ? 'bold' : 'normal');
+          doc.setFontSize(isTitle ? 18 : isHead ? 13 : 10);
+          doc.splitTextToSize(ln || ' ', 495).forEach(part => {
+            if (y > pageH - 50) { doc.addPage(); y = 50; }
+            doc.text(part, 50, y);
+            y += isTitle ? 26 : isHead ? 20 : 15;
+          });
+        });
+        doc.save('talenttrack-my-data.pdf');
+      }
+    } catch (e) { setError(e.message); }
+  };
+
   return (
     <div className="stg-container">
       <div className="sg-header"><h2><i className="fas fa-cog" /> Settings</h2><p>Manage your account, privacy, and AI preferences.</p></div>
@@ -147,6 +221,11 @@ export default function Settings() {
               </button>
             </div>
           )}
+
+                            <div style={{ display:'flex', gap:'0.5rem', flexWrap:'wrap' }}>
+                  <button className="prf-add-btn" onClick={() => exportData('pdf')}><i className="fas fa-file-pdf" /> PDF</button>
+                  <button className="prf-add-btn" onClick={() => exportData('txt')}><i className="fas fa-file-lines" /> Text</button>
+                </div>
 
           {/* AI Settings */}
           {activeSection === 'AI Settings' && (
@@ -221,9 +300,18 @@ export default function Settings() {
               <div className="stg-data-card">
                 <div><i className="fas fa-download" style={{ color:'#6366f1', fontSize:'1.5rem' }} /></div>
                 <div><h4>Export My Data</h4><p>Download a complete copy of your profile, analyses, and career data in JSON format.</p></div>
-                <a href={`${BACKEND_URL}/api/profile/export`} className="prf-add-btn" download>
-                  <i className="fas fa-download" /> Export
-                </a>
+                  <button className="prf-add-btn" onClick={async () => {
+    try {
+      const r = await fetch(`${BACKEND_URL}/api/profile/export`, { headers: { Authorization: `Bearer ${getToken()}` } });
+      if (!r.ok) throw new Error('Export failed');
+      const url = URL.createObjectURL(await r.blob());
+      const a = document.createElement('a');
+      a.href = url; a.download = 'talenttrack-data-export.json'; a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) { setError(e.message); }
+  }}>
+    <i className="fas fa-download" /> Export
+  </button>
               </div>
             </div>
           )}
