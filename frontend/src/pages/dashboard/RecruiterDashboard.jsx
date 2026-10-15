@@ -501,13 +501,31 @@ function ApplicantsView({ myJobs, loadMyJobs, loadAppsForJob, showToast }) {
                   {a.applicant?.location && <span><i className="fas fa-map-marker-alt" /> {a.applicant.location}</span>}
                   <span>Applied {new Date(a.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</span>
                 </div>
+                                <div style={{ display:'flex', flexWrap:'wrap', gap:'0.4rem', marginTop:8 }}>
+                  {[
+                    ['fa-phone', a.phone], ['fa-location-dot', a.currentLocation],
+                    ['fa-briefcase', a.experienceYears && `${a.experienceYears} exp`],
+                    ['fa-hourglass-half', a.noticePeriod && `Notice: ${a.noticePeriod}`],
+                    ['fa-money-bill', a.expectedSalary && `Expected: ${a.expectedSalary}`],
+                  ].filter(([, t]) => t).map(([ic, t]) => (
+                    <span key={t} style={{ background:'var(--surface2)', border:'1px solid var(--border)', borderRadius:20, padding:'2px 10px', fontSize:'0.75rem' }}>
+                      <i className={`fas ${ic}`} /> {t}
+                    </span>
+                  ))}
+                </div>
+                {(a.linkedinUrl || a.portfolioUrl) && (
+                  <div style={{ marginTop:6, fontSize:'0.8rem', display:'flex', gap:12 }}>
+                    {a.linkedinUrl && <a href={a.linkedinUrl} target="_blank" rel="noreferrer"><i className="fab fa-linkedin" /> LinkedIn</a>}
+                    {a.portfolioUrl && <a href={a.portfolioUrl} target="_blank" rel="noreferrer"><i className="fas fa-link" /> Portfolio</a>}
+                  </div>
+                )}
                 {a.coverLetter && (
                   <p className="rdb-cover-preview">
-                    "{a.coverLetter.slice(0,120)}{a.coverLetter.length>120?'…':''}"
+                    "{a.coverLetter.slice(0,200)}{a.coverLetter.length>200?'…':''}"
                   </p>
                 )}
                 {a.resumeUrl && (
-                  <a href={`${import.meta.env.VITE_API_URL||'http://localhost:5000'}${a.resumeUrl}`}
+                  <a href={a.resumeUrl.startsWith('http') ? a.resumeUrl : `${import.meta.env.VITE_API_URL||'http://localhost:5000'}${a.resumeUrl}`}
                     target="_blank" rel="noreferrer"
                     style={{ fontSize:'0.8rem', color:'var(--primary)', display:'inline-flex', alignItems:'center', gap:4, marginTop:6 }}>
                     <i className="fas fa-file-pdf" /> View Resume

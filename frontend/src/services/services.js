@@ -22,17 +22,11 @@ export const JobService = {
 
 // ── Applications ──────────────────────────────────────────────
 export const ApplicationService = {
-  apply: async (jobId, { coverLetter = '', resumeFile = null } = {}) => {
-    if (resumeFile) {
-      const fd = new FormData();
-      fd.append('resume', resumeFile);
-      if (coverLetter) fd.append('coverLetter', coverLetter);
-      return apiRequest(`/api/applications/${jobId}`, { method:'POST', body: fd });
-    }
-    return apiRequest(`/api/applications/${jobId}`, {
-      method: 'POST',
-      body:   JSON.stringify({ coverLetter }),
-    });
+    apply: async (jobId, { resumeFile = null, ...fields } = {}) => {
+    const fd = new FormData();
+    Object.entries(fields).forEach(([k, v]) => { if (v !== undefined && v !== null && v !== '') fd.append(k, v); });
+    if (resumeFile) fd.append('resume', resumeFile);
+    return apiRequest(`/api/applications/${jobId}`, { method:'POST', body: fd });
   },
   getMyApplications: (params = {}) => {
     const q = new URLSearchParams(params).toString();

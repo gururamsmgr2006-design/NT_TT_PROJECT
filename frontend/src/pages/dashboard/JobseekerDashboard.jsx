@@ -337,26 +337,78 @@ function SavedTab() {
 
 // ── Apply Modal ───────────────────────────────────────────────
 function ApplyModal({ job, onClose, onSuccess }) {
-  const [coverLetter, setCoverLetter] = useState('');
-  const [loading,     setLoading]     = useState(false);
-  const [error,       setError]       = useState('');
+  const { user } = useAuth();
+  const [f, setF] = useState({
+    phone: user?.phone || '', currentLocation: user?.location || '',
+    experienceYears: '', noticePeriod: '', expectedSalary: '',
+    linkedinUrl: '', portfolioUrl: '', coverLetter: '',
+  });
+  const [resumeFile, setResumeFile] = useState(null);
+  const [agree,   setAgree]   = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error,   setError]   = useState('');
+  const set = (k) => (e) => setF(p => ({ ...p, [k]: e.target.value }));
+
+  const pickFile = (e) => {
+    const file = e.target.files[0];
+    if (file && file.size > 5 * 1024 * 1024) { setError('Resume must be under 5MB.'); e.target.value = ''; return; }
+    setError(''); setResumeFile(file || null);
+  };
 
   const submit = async () => {
+    if (!f.phone.trim() || !f.currentLocation.trim() || !f.experienceYears || !f.noticePeriod) {
+      setError('Please fill phone, location, experience and notice period.'); return;
+    }
+    if (!agree) { setError('Please confirm the declaration.'); return; }
     setLoading(true); setError('');
     try {
-      await ApplicationService.apply(job._id, { coverLetter });
+      await ApplicationService.apply(job._id, { ...f, resumeFile });
       onSuccess(`Applied to ${job.title}!`);
       onClose();
     } catch (err) { setError(err.message || 'Application failed.'); }
     finally { setLoading(false); }
   };
 
+  const grid = { display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0.75rem' };
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal-card" onClick={e => e.stopPropagation()}>
         <div className="modal-header"><h3>Apply: {job.title}</h3><button className="modal-close" onClick={onClose}>×</button></div>
         <p style={{ color:'#6b7280', marginBottom:'1rem' }}>{job.company} · {job.location}</p>
-        <div className="prf-field"><label>Cover Letter (optional)</label><textarea rows={5} placeholder="Write a brief cover letter…" value={coverLetter} onChange={e=>setCoverLetter(e.target.value)} /></div>
+
+        <div className="prf-field"><label>Applying as</label>
+          <input value={`${user?.fullName || ''} (${user?.email || ''})`} disabled /></div>
+
+        <div style={grid}>
+          <div className="prf-field"><label>Phone *</label><input value={f.phone} onChange={set('phone')} placeholder="+91 98765 43210" /></div>
+          <div className="prf-field"><label>Current Location *</label><input value={f.currentLocation} onChange={set('currentLocation')} placeholder="City, State" /></div>
+          <div className="prf-field"><label>Experience *</label>
+            <select value={f.experienceYears} onChange={set('experienceYears')}>
+              <option value="">Select…</option>
+              {['Fresher','0-1 years','1-3 years','3-5 years','5-8 years','8+ years'].map(o => <option key={o}>{o}</option>)}
+            </select></div>
+          <div className="prf-field"><label>Notice Period *</label>
+            <select value={f.noticePeriod} onChange={set('noticePeriod')}>
+              <option value="">Select…</option>
+              {['Immediate','15 days','30 days','60 days','90 days'].map(o => <option key={o}>{o}</option>)}
+            </select></div>
+          <div className="prf-field"><label>Expected Salary (optional)</label><input value={f.expectedSalary} onChange={set('expectedSalary')} placeholder="e.g. 6 LPA" /></div>
+          <div className="prf-field"><label>LinkedIn (optional)</label><input value={f.linkedinUrl} onChange={set('linkedinUrl')} placeholder="https://linkedin.com/in/…" /></div>
+        </div>
+        <div className="prf-field"><label>Portfolio / GitHub (optional)</label><input value={f.portfolioUrl} onChange={set('portfolioUrl')} placeholder="https://…" /></div>
+
+        <div className="prf-field"><label>Resume (PDF/DOC/DOCX, max 5MB)</label>
+          <input type="file" accept=".pdf,.doc,.docx" onChange={pickFile} />
+          <small style={{ color:'#6b7280' }}>{resumeFile ? resumeFile.name : 'If you skip this, your saved profile resume is used.'}</small></div>
+
+        <div className="prf-field"><label>Why are you a good fit? (optional)</label>
+          <textarea rows={4} maxLength={2000} placeholder="Briefly describe your relevant skills and motivation…" value={f.coverLetter} onChange={set('coverLetter')} /></div>
+
+        <label style={{ display:'flex', gap:8, fontSize:'0.85rem', marginBottom:'0.75rem' }}>
+          <input type="checkbox" checked={agree} onChange={e => setAgree(e.target.checked)} />
+          I confirm the information provided is accurate.
+        </label>
+
         {error && <div className="ra-error" style={{ marginBottom:'0.75rem' }}><i className="fas fa-exclamation-circle" /> {error}</div>}
         <div className="modal-actions">
           <button className="ra-new-btn" onClick={onClose}>Cancel</button>
@@ -366,7 +418,6 @@ function ApplyModal({ job, onClose, onSuccess }) {
     </div>
   );
 }
-
 // ════════════════════════════════════════════════════════════════
 // MAIN DASHBOARD
 // ════════════════════════════════════════════════════════════════

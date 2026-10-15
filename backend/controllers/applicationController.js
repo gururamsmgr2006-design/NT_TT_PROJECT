@@ -18,7 +18,20 @@ const validator   = require('validator');
 exports.applyToJob = async (req, res, next) => {
   try {
     const { jobId }      = req.params;
-    const { coverLetter } = req.body;
+        const { coverLetter, phone, currentLocation, experienceYears, noticePeriod,
+            expectedSalary, linkedinUrl, portfolioUrl } = req.body;
+
+    if (!phone || !currentLocation || !experienceYears || !noticePeriod) {
+      return res.status(400).json({ success: false, message: 'Phone, location, experience and notice period are required.' });
+    }
+    if (!/^[+\d][\d\s-]{6,17}$/.test(String(phone).trim())) {
+      return res.status(400).json({ success: false, message: 'Please enter a valid phone number.' });
+    }
+    const urlOk = (u) => !u || validator.isURL(String(u), { protocols: ['http', 'https'], require_protocol: true });
+    if (!urlOk(linkedinUrl) || !urlOk(portfolioUrl)) {
+      return res.status(400).json({ success: false, message: 'Links must start with http:// or https://' });
+    }
+    const clean = (v, n = 100) => (v ? String(v).replace(/[<>]/g, '').trim().slice(0, n) : '');
 
     const job = await Job.findById(jobId);
     if (!job) return res.status(404).json({ success: false, message: 'Job not found.' });
@@ -45,6 +58,13 @@ exports.applyToJob = async (req, res, next) => {
       coverLetter: coverLetter ? validator.escape(coverLetter.trim().slice(0, 2000)) : '',
       resumeUrl,
       resumeOriginalName,
+            phone:           clean(phone, 20),
+      currentLocation: clean(currentLocation),
+      experienceYears: clean(experienceYears, 30),
+      noticePeriod:    clean(noticePeriod, 30),
+      expectedSalary:  clean(expectedSalary, 50),
+      linkedinUrl:     linkedinUrl ? String(linkedinUrl).trim() : '',
+      portfolioUrl:    portfolioUrl ? String(portfolioUrl).trim() : '',
     });
 
     await Job.findByIdAndUpdate(jobId, { $inc: { applicationCount: 1 } });
