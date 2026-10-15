@@ -205,19 +205,11 @@ export default function Settings() {
               <h3>Data Management</h3>
               <div className="stg-data-card">
                 <div><i className="fas fa-download" style={{ color:'#6366f1', fontSize:'1.5rem' }} /></div>
-                <div><h4>Export My Data</h4><p>Download a complete copy of your profile, analyses, and career data in JSON format.</p></div>
-                  <button className="prf-add-btn" onClick={async () => {
-    try {
-      const r = await fetch(`${BACKEND_URL}/api/profile/export`, { headers: { Authorization: `Bearer ${getToken()}` } });
-      if (!r.ok) throw new Error('Export failed');
-      const url = URL.createObjectURL(await r.blob());
-      const a = document.createElement('a');
-      a.href = url; a.download = 'talenttrack-data-export.json'; a.click();
-      URL.revokeObjectURL(url);
-    } catch (e) { setError(e.message); }
-  }}>
-    <i className="fas fa-download" /> Export
-  </button>
+                <div><h4>Export My Data</h4><p>Download a copy of your account and profile data as a PDF or text file.</p></div>
+                                  <div style={{ display:'flex', gap:'0.5rem', flexWrap:'wrap' }}>
+                  <button className="prf-add-btn" onClick={() => exportData('pdf')}><i className="fas fa-file-pdf" /> PDF</button>
+                  <button className="prf-add-btn" onClick={() => exportData('txt')}><i className="fas fa-file-lines" /> Text</button>
+                </div>
               </div>
             </div>
           )}
