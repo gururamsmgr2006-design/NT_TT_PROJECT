@@ -49,7 +49,7 @@ exports.signup = async (req, res, next) => {
     }
 
     const { fullName, email, password, role, companyName } = req.body;
-
+    if (role === 'admin') return res.status(403).json({ success: false, message: 'Invalid role.' });
     // Recruiters must provide a company name
     if (role === 'recruiter' && !companyName) {
       return res.status(400).json({ success: false, message: 'Company name is required for recruiters.' });

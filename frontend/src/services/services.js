@@ -66,5 +66,8 @@ export const UserService = {
 
 // ── Feedback (NEW) ────────────────────────────────────────────
 export const FeedbackService = {
-  submit: (data) => apiRequest('/api/feedback', { method:'POST', body: JSON.stringify(data) }),
+  submit:      (data) => apiRequest('/api/feedback', { method:'POST', body: JSON.stringify(data) }),
+  getAll:      (qs = '') => apiRequest(`/api/feedback?${qs}`),
+  setResolved: (id, resolved) => apiRequest(`/api/feedback/${id}/resolve`, { method:'PATCH', body: JSON.stringify({ resolved }) }),
+  remove:      (id) => apiRequest(`/api/feedback/${id}`, { method:'DELETE' }),
 };

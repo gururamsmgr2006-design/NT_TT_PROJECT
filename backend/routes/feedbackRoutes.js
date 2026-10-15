@@ -1,16 +1,11 @@
-// ============================================================
-// routes/feedbackRoutes.js — NEW FILE
-// ============================================================
-
 const express = require('express');
 const router  = express.Router();
-const { submitFeedback, getAllFeedback } = require('../controllers/feedbackController');
+const { submitFeedback, getAllFeedback, setResolved, deleteFeedback } = require('../controllers/feedbackController');
 const { protect, authorize } = require('../middleware/auth');
 
-// Public: Anyone can submit feedback
-router.post('/', submitFeedback);
-
-// Protected: Only recruiters/admin can view all feedback
-router.get('/', protect, authorize('recruiter'), getAllFeedback);
+router.post('/', submitFeedback);                                          // public form
+router.get('/', protect, authorize('admin'), getAllFeedback);              // was 'recruiter'
+router.patch('/:id/resolve', protect, authorize('admin'), setResolved);
+router.delete('/:id', protect, authorize('admin'), deleteFeedback);
 
 module.exports = router;

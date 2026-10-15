@@ -34,8 +34,9 @@ export function ProtectedRoute({ children, role }) {
   if (!isLoggedIn) return <Navigate to="/login" replace />;
   if (role && user?.role !== role) {
     return <Navigate to={
-      user?.role === 'recruiter' ? '/dashboard/recruiter' : '/dashboard/jobseeker'
-    } replace />;
+  user?.role === 'admin' ? '/dashboard/admin'
+  : user?.role === 'recruiter' ? '/dashboard/recruiter' : '/dashboard/jobseeker'
+} replace />
   }
   return children;
 }

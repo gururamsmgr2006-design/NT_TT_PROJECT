@@ -21,7 +21,7 @@ export default function Navbar() {
   useEffect(() => { setOpen(false); }, [location.pathname]);
 
   const isActive = (path) => location.pathname === path;
-  const dashLink = user?.role === 'recruiter' ? '/dashboard/recruiter' : '/dashboard/jobseeker';
+  const dashLink = user?.role === 'admin' ? '/dashboard/admin' : user?.role === 'recruiter' ? '/dashboard/recruiter' : '/dashboard/jobseeker';
 
   const NAV_LINKS = [
     { to: '/',                    label: 'Home'                },

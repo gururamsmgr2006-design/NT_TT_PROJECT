@@ -26,7 +26,7 @@ export default function Login() {
   useEffect(() => {
     if (isLoggedIn && user) {
       navigate(
-        user.role === 'recruiter' ? '/dashboard/recruiter' : '/dashboard/jobseeker',
+      user.role === 'admin' ? '/dashboard/admin' : user.role === 'recruiter' ? '/dashboard/recruiter' : '/dashboard/jobseeker',
         { replace: true }
       );
     }
@@ -44,7 +44,7 @@ export default function Login() {
       showToast('✅ Login successful! Redirecting…');
       setTimeout(() => {
         navigate(
-          data.user.role === 'recruiter' ? '/dashboard/recruiter' : '/dashboard/jobseeker',
+         data.user.role === 'admin' ? '/dashboard/admin' : user.role === 'recruiter' ? '/dashboard/recruiter' : '/dashboard/jobseeker',
           { replace: true }
         );
       }, 800);

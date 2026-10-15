@@ -19,6 +19,7 @@ import ForgotPassword     from './pages/auth/ForgotPassword.jsx';
 import ResetPassword      from './pages/auth/ResetPassword.jsx';
 import JobseekerDashboard from './pages/dashboard/JobseekerDashboard.jsx';
 import RecruiterDashboard from './pages/dashboard/RecruiterDashboard.jsx';
+import AdminDashboard from './pages/dashboard/AdminDashboard.jsx';
 
 export default function App() {
   return (
@@ -53,6 +54,11 @@ export default function App() {
                 <ErrorBoundary><RecruiterDashboard /></ErrorBoundary>
               </ProtectedRoute>
             } />
+            <Route path="/dashboard/admin" element={
+  <ProtectedRoute role="admin">
+    <ErrorBoundary><AdminDashboard /></ErrorBoundary>
+  </ProtectedRoute>
+} />
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

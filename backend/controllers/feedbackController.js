@@ -78,23 +78,46 @@ exports.getAllFeedback = async (req, res, next) => {
     const limitNum = Math.min(100, parseInt(limit, 10) || 20);
     const skip     = (pageNum - 1) * limitNum;
 
-    const query = {};
-    if (type) query.feedbackType = type;
+    const { search, status } = req.query;
+const query = {};
+if (type) query.feedbackType = type;
+if (status === 'open') query.resolved = false;
+if (status === 'resolved') query.resolved = true;
+if (search) {
+  const rx = new RegExp(String(search).replace(/[.*+?^${}()|[\]\\]/g, '\\$&').slice(0, 60), 'i');
+  query.$or = [{ fullName: rx }, { email: rx }, { message: rx }];
+}
 
-    const [feedbackList, total] = await Promise.all([
-      Feedback.find(query).sort({ createdAt: -1 }).skip(skip).limit(limitNum),
-      Feedback.countDocuments(query),
-    ]);
+const [feedbackList, total, all, resolvedCount, bugs] = await Promise.all([
+  Feedback.find(query).sort({ createdAt: -1 }).skip(skip).limit(limitNum),
+  Feedback.countDocuments(query),
+  Feedback.countDocuments(),
+  Feedback.countDocuments({ resolved: true }),
+  Feedback.countDocuments({ feedbackType: 'Bug Report' }),
+]);
 
-    res.status(200).json({
-      success: true,
-      count: feedbackList.length,
-      total,
-      totalPages: Math.ceil(total / limitNum),
-      currentPage: pageNum,
-      feedback: feedbackList,
-    });
+res.status(200).json({
+  success: true, count: feedbackList.length, total,
+  totalPages: Math.ceil(total / limitNum), currentPage: pageNum,
+  feedback: feedbackList,
+  stats: { total: all, resolved: resolvedCount, unresolved: all - resolvedCount, bugs },
+});
   } catch (error) {
     next(error);
   }
+};
+exports.setResolved = async (req, res, next) => {
+  try {
+    const fb = await Feedback.findByIdAndUpdate(req.params.id, { resolved: !!req.body.resolved }, { new: true });
+    if (!fb) return res.status(404).json({ success: false, message: 'Feedback not found.' });
+    res.json({ success: true, feedback: fb });
+  } catch (e) { next(e); }
+};
+
+exports.deleteFeedback = async (req, res, next) => {
+  try {
+    const fb = await Feedback.findByIdAndDelete(req.params.id);
+    if (!fb) return res.status(404).json({ success: false, message: 'Feedback not found.' });
+    res.json({ success: true });
+  } catch (e) { next(e); }
 };

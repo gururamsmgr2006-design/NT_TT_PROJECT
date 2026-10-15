@@ -26,7 +26,7 @@ const userProfileRoutes  = require('./routes/userProfileRoutes');
 const analyticsRoutes    = require('./routes/analyticsRoutes');
 const achievementRoutes  = require('./routes/achievementRoutes');
 const marketRoutes       = require('./routes/marketRoutes');
-
+  const feedbackRoutes = require('./routes/feedbackRoutes');
 connectDB();
 
 const app = express();
@@ -150,7 +150,7 @@ app.use('/api/profile',      userProfileRoutes);
 app.use('/api/analytics',    analyticsRoutes);
 app.use('/api/achievements', achievementRoutes);
 app.use('/api/market',       marketRoutes);
-
+  app.use('/api/feedback', feedbackRoutes);
 // ─── Health Check ─────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
   res.json({
