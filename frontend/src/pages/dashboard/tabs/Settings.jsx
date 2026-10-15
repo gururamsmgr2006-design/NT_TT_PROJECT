@@ -5,7 +5,7 @@ import { useAuth } from '../../../context/AuthContext.jsx';
   import { apiRequest, BACKEND_URL, getToken } from '../../../services/api.js';
   import { jsPDF } from 'jspdf';
 
-const SECTIONS = ['Account','Privacy','AI Settings','Theme & Language','Data','Danger Zone'];
+const SECTIONS = ['Account','Data','Danger Zone'];
 
 export default function Settings() {
   const { user, logout, refreshUser } = useAuth();
@@ -195,100 +195,6 @@ export default function Settings() {
               ))}
               <button className="prf-add-btn" onClick={changePassword} disabled={pwdSaving} style={{ marginTop:'0.5rem' }}>
                 {pwdSaving ? <><i className="fas fa-spinner fa-pulse" /> Changing…</> : 'Change Password'}
-              </button>
-            </div>
-          )}
-
-          {/* Privacy */}
-          {activeSection === 'Privacy' && (
-            <div className="stg-panel">
-              <h3>Privacy Settings</h3>
-              {[
-                { key:'recruiterAccess', label:'Recruiter Access', desc:'Allow recruiters to discover your profile' },
-                { key:'anonymousMode',   label:'Anonymous Mode',   desc:'Hide your name from recruiters while browsing' },
-                { key:'dataSharing',     label:'Data Sharing',     desc:'Share anonymised data to improve AI recommendations' },
-              ].map(item => (
-                <div key={item.key} className="stg-toggle-row">
-                  <div><div className="stg-toggle-label">{item.label}</div><div className="stg-toggle-desc">{item.desc}</div></div>
-                  <label className="stg-switch">
-                    <input type="checkbox" checked={settings.privacy?.[item.key]||false} onChange={e => updSetting('privacy', item.key, e.target.checked)} />
-                    <span className="stg-slider" />
-                  </label>
-                </div>
-              ))}
-              <button className="prf-add-btn" onClick={saveSettings} disabled={saving} style={{ marginTop:'1.5rem' }}>
-                {saving ? 'Saving…' : 'Save Privacy Settings'}
-              </button>
-            </div>
-          )}
-
-                            <div style={{ display:'flex', gap:'0.5rem', flexWrap:'wrap' }}>
-                  <button className="prf-add-btn" onClick={() => exportData('pdf')}><i className="fas fa-file-pdf" /> PDF</button>
-                  <button className="prf-add-btn" onClick={() => exportData('txt')}><i className="fas fa-file-lines" /> Text</button>
-                </div>
-
-          {/* AI Settings */}
-          {activeSection === 'AI Settings' && (
-            <div className="stg-panel">
-              <h3>AI Preferences</h3>
-              <div className="prf-field"><label>Recommendation Frequency</label>
-                <select value={settings.recommendationFrequency} onChange={e => setSettings(p=>({...p,recommendationFrequency:e.target.value}))}>
-                  {['daily','weekly','manual'].map(v=><option key={v} value={v}>{v.charAt(0).toUpperCase()+v.slice(1)}</option>)}
-                </select>
-              </div>
-              <div className="prf-field"><label>Forecast Frequency</label>
-                <select value={settings.forecastFrequency} onChange={e => setSettings(p=>({...p,forecastFrequency:e.target.value}))}>
-                  {['weekly','monthly','manual'].map(v=><option key={v} value={v}>{v.charAt(0).toUpperCase()+v.slice(1)}</option>)}
-                </select>
-              </div>
-              {[
-                { key:'personalization', label:'Personalisation', desc:'Use your profile data to personalise AI responses' },
-                { key:'contextMemory',   label:'Context Memory',  desc:'Remember conversation context across sessions' },
-              ].map(item => (
-                <div key={item.key} className="stg-toggle-row">
-                  <div><div className="stg-toggle-label">{item.label}</div><div className="stg-toggle-desc">{item.desc}</div></div>
-                  <label className="stg-switch">
-                    <input type="checkbox" checked={settings.ai?.[item.key]||false} onChange={e => updSetting('ai', item.key, e.target.checked)} />
-                    <span className="stg-slider" />
-                  </label>
-                </div>
-              ))}
-              <h4 style={{ marginTop:'1.5rem' }}>Notifications</h4>
-              {[['email','Email notifications'],['inApp','In-app notifications'],['achievements','Achievement alerts'],['jobAlerts','Job match alerts']].map(([k,l]) => (
-                <div key={k} className="stg-toggle-row">
-                  <div className="stg-toggle-label">{l}</div>
-                  <label className="stg-switch">
-                    <input type="checkbox" checked={settings.notifications?.[k]||false} onChange={e => updSetting('notifications', k, e.target.checked)} />
-                    <span className="stg-slider" />
-                  </label>
-                </div>
-              ))}
-              <button className="prf-add-btn" onClick={saveSettings} disabled={saving} style={{ marginTop:'1.5rem' }}>
-                {saving ? 'Saving…' : 'Save AI Settings'}
-              </button>
-            </div>
-          )}
-
-          {/* Theme & Language */}
-          {activeSection === 'Theme & Language' && (
-            <div className="stg-panel">
-              <h3>Theme & Language</h3>
-              <div className="prf-field"><label>Theme</label>
-                <div className="stg-theme-opts">
-                  {['light','dark','system'].map(t => (
-                    <button key={t} className={`stg-theme-btn${settings.theme===t?' active':''}`} onClick={() => setSettings(p=>({...p,theme:t}))}>
-                      <i className={`fas fa-${t==='light'?'sun':t==='dark'?'moon':'desktop'}`} /> {t.charAt(0).toUpperCase()+t.slice(1)}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="prf-field"><label>Language</label>
-                <select value={settings.language} onChange={e => setSettings(p=>({...p,language:e.target.value}))}>
-                  {[['en','English'],['hi','हिंदी'],['ta','தமிழ்'],['kn','ಕನ್ನಡ'],['te','తెలుగు']].map(([v,l]) => <option key={v} value={v}>{l}</option>)}
-                </select>
-              </div>
-              <button className="prf-add-btn" onClick={saveSettings} disabled={saving} style={{ marginTop:'1rem' }}>
-                {saving ? 'Saving…' : 'Save Preferences'}
               </button>
             </div>
           )}
